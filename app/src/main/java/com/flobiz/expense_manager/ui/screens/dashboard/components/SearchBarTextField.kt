@@ -26,8 +26,7 @@ fun SearchBarTextField() {
     var query = remember { mutableStateOf("") }
     TextField(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp),
+            .fillMaxWidth(),
         value = query.value,
         onValueChange = { query.value = it },
         placeholder = { Text("Search...") },

@@ -20,7 +20,12 @@ import androidx.compose.ui.unit.sp
 import com.flobiz.expense_manager.ui.theme.ColorPrimary
 
 @Composable
-fun TransactionCard(modifier: Modifier = Modifier) {
+fun TransactionCard(
+    text: String,
+    amt: Double,
+    id: String,
+    date:String,
+    modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -40,13 +45,13 @@ fun TransactionCard(modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    "Electricity Bill",
+                    text,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.DarkGray
                 )
                 Text(
-                    "Rs. 10000",
+                    amt.toString(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.DarkGray
@@ -54,13 +59,13 @@ fun TransactionCard(modifier: Modifier = Modifier) {
             }
             Box(modifier = Modifier.height(8.dp))
             Text(
-                "Expense#12",
+                id,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.DarkGray
             )
             Text(
-                "12 Oct 2019",
+                date,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Light,
                 color = Color.DarkGray

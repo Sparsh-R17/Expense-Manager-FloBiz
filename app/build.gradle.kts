@@ -63,4 +63,7 @@ dependencies {
 
     //firebase-analytics
     implementation("com.google.firebase:firebase-analytics")
+
+    //navigation
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 }
