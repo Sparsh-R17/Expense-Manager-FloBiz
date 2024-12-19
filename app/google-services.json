@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "193814818908",
+    "project_id": "expense-manager-flobiz",
+    "storage_bucket": "expense-manager-flobiz.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:193814818908:android:d376b17e4f8446ca1c3699",
+        "android_client_info": {
+          "package_name": "com.flobiz.expense_manager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc34xJa_lwMiUh7s5cnE2bMU-pkc0uGI8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
