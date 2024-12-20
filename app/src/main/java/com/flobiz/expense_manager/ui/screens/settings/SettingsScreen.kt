@@ -43,30 +43,38 @@ import com.flobiz.expense_manager.ui.theme.ColorOnSecondary
 import com.flobiz.expense_manager.ui.theme.ColorPrimary
 import com.flobiz.expense_manager.viewModel.AuthState
 import com.flobiz.expense_manager.viewModel.AuthViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    modifier: Modifier = Modifier, authViewModel: AuthViewModel = viewModel(),navController : NavHostController
+    authViewModel: AuthViewModel = viewModel(),
+    navController: NavHostController
 ) {
 
     val authState = authViewModel.authState.observeAsState()
     val context = LocalContext.current
 
-    LaunchedEffect (authState.value){
-        when(authState.value) {
+    var user = FirebaseAuth.getInstance().currentUser
+
+    LaunchedEffect(key1 = authState.value) {
+        when (authState.value) {
             is AuthState.Unauthenticated -> {
-                kotlinx.coroutines.delay(100)
                 navController.navigate(Screen.Login.route) {
-                    popUpTo(Screen.Login.route) {
-                        inclusive = true
-                    }
+                    popUpTo(0) { inclusive = true }
                 }
             }
-            is AuthState.Error -> Toast.makeText(context, (authState.value as AuthState.Error).msg, Toast.LENGTH_LONG).show()
+            is AuthState.Error -> {
+                Toast.makeText(
+                    context,
+                    (authState.value as AuthState.Error).msg,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
             else -> Unit
         }
     }
+
 
     Scaffold(
         containerColor = ColorPrimary.copy(alpha = .05f),
@@ -96,10 +104,9 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                ProfileAvatar(null)
+                ProfileAvatar(user?.photoUrl.toString())
                 Spacer(modifier = Modifier.width(30.dp))
-                Text(
-                    "Display Name",
+                Text(user?.displayName?:"No Name Found",
                     color = ColorOnBackground,
                     fontSize = 30.sp,
                 )

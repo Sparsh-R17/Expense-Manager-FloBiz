@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flobiz.expense_manager.ui.theme.ColorPrimary
+import com.flobiz.expense_manager.utils.TransactionType
 
 @Composable
 fun TransactionCard(
@@ -25,6 +26,7 @@ fun TransactionCard(
     amt: Double,
     id: String,
     date:String,
+    type: TransactionType,
     modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
@@ -51,10 +53,10 @@ fun TransactionCard(
                     color = Color.DarkGray
                 )
                 Text(
-                    amt.toString(),
+                    if(type ==  TransactionType.Expense) "- ₹$amt"  else "+ ₹$amt",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.DarkGray
+                    color = if (type == TransactionType.Expense) Color.Red else Color(0xFF0A5539)
                 )
             }
             Box(modifier = Modifier.height(8.dp))

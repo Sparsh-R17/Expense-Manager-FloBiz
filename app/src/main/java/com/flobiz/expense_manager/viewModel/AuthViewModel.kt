@@ -5,23 +5,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.flobiz.expense_manager.repository.AuthRepository
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 
 class AuthViewModel(private val authRepository: AuthRepository = AuthRepository()) : ViewModel() {
     private val _user = MutableLiveData<FirebaseUser?>()
-    val user: LiveData<FirebaseUser?> = _user
 
     private val _loading = MutableLiveData(false)
-    val loading: LiveData<Boolean> = _loading
 
     private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> = _errorMessage
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val _authState = MutableLiveData<AuthState>()
@@ -88,11 +86,15 @@ class AuthViewModel(private val authRepository: AuthRepository = AuthRepository(
         _authState.value = AuthState.Authenticated
     }
 
+
+
     fun logout() {
-        viewModelScope.launch {
-            auth.signOut()
-            _authState.postValue(AuthState.Unauthenticated)
-        }
+        _loading.value = true
+        auth.signOut()
+        _loading.value = false
+        _user.value = null
+
+        _authState.value = AuthState.Unauthenticated
     }
 }
 

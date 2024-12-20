@@ -1,5 +1,6 @@
 package com.flobiz.expense_manager.ui.screens.dashboard
 
+import TransactionViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,7 +35,6 @@ import com.flobiz.expense_manager.model.Transaction
 import com.flobiz.expense_manager.navigation.Screen
 import com.flobiz.expense_manager.ui.screens.dashboard.components.SearchBarTextField
 import com.flobiz.expense_manager.ui.screens.dashboard.components.TransactionCard
-import com.flobiz.expense_manager.viewModel.TransactionViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
@@ -130,7 +130,8 @@ fun SwipeToDismiss(
             text = transaction.text,
             amt = transaction.amount,
             id = transaction.invoiceNumber,
-            date = transaction.date
+            date = transaction.date,
+            type = transaction.type
         )
     }
 }

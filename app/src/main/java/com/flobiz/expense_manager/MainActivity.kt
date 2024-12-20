@@ -1,6 +1,6 @@
 package com.flobiz.expense_manager
 
-import com.flobiz.expense_manager.ui.screens.dashboard.DashboardScreen
+import TransactionViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,7 +20,9 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -30,57 +32,76 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.flobiz.expense_manager.navigation.NavItem
 import com.flobiz.expense_manager.navigation.NavigationStack
-import com.flobiz.expense_manager.ui.screens.auth.LoginScreen
+import com.flobiz.expense_manager.navigation.Screen
+import com.flobiz.expense_manager.ui.screens.dashboard.DashboardScreen
 import com.flobiz.expense_manager.ui.screens.settings.SettingsScreen
 import com.flobiz.expense_manager.ui.theme.ColorBackground
 import com.flobiz.expense_manager.ui.theme.ColorOnSecondary
 import com.flobiz.expense_manager.ui.theme.ColorPrimary
 import com.flobiz.expense_manager.ui.theme.ColorSecondary
 import com.flobiz.expense_manager.ui.theme.Flobiz_jcTheme
+import com.flobiz.expense_manager.viewModel.AuthState
 import com.flobiz.expense_manager.viewModel.AuthViewModel
-import com.flobiz.expense_manager.viewModel.TransactionViewModel
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
+    private lateinit var authViewModel: AuthViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         FirebaseApp.initializeApp(this)
+
+        // Initialize ViewModels
         val transactionViewModel = TransactionViewModel()
-        val authViewModel = AuthViewModel()
+        authViewModel = AuthViewModel()
+
         setContent {
-            Flobiz_jcTheme(
-                darkTheme = false
-            ) {
-                NavigationStack(transactionViewModel = transactionViewModel, authViewModel)
+            Flobiz_jcTheme(darkTheme = false) {
+                NavigationStack(
+                    transactionViewModel = transactionViewModel,
+                    authViewModel = authViewModel
+                )
             }
         }
     }
 }
 
 @Composable
-fun MainScreen(navController: NavHostController, transactionViewModel: TransactionViewModel) {
+fun MainScreen(
+    navController: NavHostController,
+    transactionViewModel: TransactionViewModel,
+    authViewModel: AuthViewModel
+) {
     val navItem = listOf(
         NavItem("Dashboard", Icons.Default.Home),
         NavItem("Settings", Icons.Default.Settings)
     )
 
-    var selectedIndex by remember {
-        mutableIntStateOf(0)
+    var selectedIndex by remember { mutableIntStateOf(0) }
+
+    val authState = authViewModel.authState.observeAsState()
+
+    LaunchedEffect (authState.value){
+        when(authState.value) {
+            is AuthState.Unauthenticated ->navController.navigate(Screen.Login.route)
+            else ->Unit
+        }
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = ColorBackground,
         floatingActionButton = {
-            if (selectedIndex == 0)
+            if (selectedIndex == 0) {
                 ExtendedFloatingActionButton(
                     text = { Text(text = "Add New") },
-                    onClick = {},
+                    onClick = { navController.navigate(Screen.AddTransaction.route) },
                     containerColor = ColorSecondary,
                     contentColor = ColorOnSecondary,
                     icon = { Icon(Icons.Filled.Add, "") }
                 )
+            }
         },
         floatingActionButtonPosition = FabPosition.Center,
         bottomBar = {
@@ -88,7 +109,7 @@ fun MainScreen(navController: NavHostController, transactionViewModel: Transacti
                 containerColor = Color.White,
                 tonalElevation = 2.dp,
             ) {
-                navItem.forEachIndexed { index, navItem ->
+                navItem.forEachIndexed { index, item ->
                     NavigationBarItem(
                         selected = selectedIndex == index,
                         colors = NavigationBarItemDefaults.colors(
@@ -98,30 +119,23 @@ fun MainScreen(navController: NavHostController, transactionViewModel: Transacti
                             selectedTextColor = ColorPrimary,
                             indicatorColor = Color.Transparent,
                         ),
-                        onClick = {
-                            selectedIndex = index
-                        },
-                        icon = {
-                            Icon(imageVector = navItem.icon, contentDescription = navItem.label)
-                        },
-                        label = {
-                            Text(navItem.label)
-                        },
-
-                        )
+                        onClick = { selectedIndex = index },
+                        icon = { Icon(imageVector = item.icon, contentDescription = item.label) },
+                        label = { Text(item.label) }
+                    )
                 }
             }
-        }) {
-        if (selectedIndex == 0)
-            DashboardScreen(
-                modifier = Modifier.padding(it),
+        }
+    ) { paddingValues ->
+        when (selectedIndex) {
+            0 -> DashboardScreen(
+                modifier = Modifier.padding(paddingValues),
                 navController = navController,
                 transactionViewModel = transactionViewModel
-            ) //innerPadding
-        else
-            SettingsScreen(modifier = Modifier.padding(it), navController = navController)
+            )
+            1 -> SettingsScreen(
+                navController = navController
+            )
+        }
     }
 }
-
-
-
