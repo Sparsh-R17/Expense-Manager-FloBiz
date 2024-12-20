@@ -10,26 +10,6 @@ import kotlinx.coroutines.tasks.await
 class AuthRepository(
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 ) {
-    suspend fun loginWithEmailAndPassword(email: String, password: String): FirebaseUser? {
-        return try {
-            val authResult = firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            authResult.user
-        } catch (e: Exception) {
-            Log.e("AuthRepository", "Error logging in with email/password: ${e.message}")
-            null
-        }
-    }
-
-    suspend fun registerWithEmailAndPassword(email: String, password: String): FirebaseUser? {
-        return try {
-            val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            authResult.user
-        } catch (e: Exception) {
-            Log.e("AuthRepository", "Error registering user: ${e.message}")
-            null
-        }
-    }
-
 
     suspend fun signInWithGoogle(account: GoogleSignInAccount): FirebaseUser? {
         return try {
@@ -40,13 +20,5 @@ class AuthRepository(
             Log.e("AuthRepository", "Error logging in with Google: ${e.message}")
             null
         }
-    }
-
-    fun getCurrentUser(): FirebaseUser? {
-        return firebaseAuth.currentUser
-    }
-
-    fun logout() {
-        firebaseAuth.signOut()
     }
 }

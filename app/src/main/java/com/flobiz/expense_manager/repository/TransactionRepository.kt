@@ -82,4 +82,13 @@ class TransactionRepository {
             Result.failure(e)
         }
     }
+
+    suspend fun updateTransaction(transaction: Transaction): Result<Unit> = try {
+        userTransactionsCollection.document(transaction.invoiceNumber)
+            .set(transaction)
+            .await()
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 }

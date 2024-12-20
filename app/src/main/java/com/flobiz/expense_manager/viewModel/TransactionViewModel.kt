@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flobiz.expense_manager.model.Transaction
 import com.flobiz.expense_manager.repository.TransactionRepository
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 class TransactionViewModel(
@@ -52,6 +54,28 @@ class TransactionViewModel(
                 }
                 .onFailure {
                     onError(it.message ?: "Failed to add transaction")
+                }
+            _isLoading.value = false
+        }
+    }
+
+    fun updateTransaction(
+        transaction: Transaction,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            repository.updateTransaction(transaction)
+                .onSuccess {
+                    val index = transactions.indexOfFirst { it.invoiceNumber == transaction.invoiceNumber }
+                    if (index != -1) {
+                        transactions[index] = transaction
+                    }
+                    onSuccess()
+                }
+                .onFailure {
+                    onError(it.message ?: "Failed to update transaction")
                 }
             _isLoading.value = false
         }

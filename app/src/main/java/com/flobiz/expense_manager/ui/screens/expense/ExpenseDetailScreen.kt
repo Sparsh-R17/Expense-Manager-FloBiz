@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.flobiz.expense_manager.R
+import com.flobiz.expense_manager.navigation.Screen
 import com.flobiz.expense_manager.ui.screens.expense.components.ExpenseAmountCard
 import com.flobiz.expense_manager.ui.screens.expense.components.ExpenseDescription
 import com.flobiz.expense_manager.ui.screens.expense.components.ExpenseIdCard
@@ -36,6 +37,7 @@ fun ExpenseDetailScreen(
 ) {
     val transaction = transactionViewModel.selectedTransaction.value
     val context = LocalContext.current
+
     Scaffold(
         containerColor = ColorPrimary.copy(alpha = .05f),
         topBar = {
@@ -50,9 +52,11 @@ fun ExpenseDetailScreen(
                 },
                 navigationIcon = {
                     Image(
-                        modifier = Modifier.clickable {
-                            navController.popBackStack()
-                        }.padding(start = 8.dp),
+                        modifier = Modifier
+                            .clickable {
+                                navController.popBackStack()
+                            }
+                            .padding(start = 8.dp),
                         painter = painterResource(R.drawable.arrow_left),
                         contentDescription = ""
                     )
@@ -62,6 +66,9 @@ fun ExpenseDetailScreen(
                         modifier = Modifier.padding(end = 20.dp)
                     ) {
                         Image(
+                            modifier = Modifier.clickable {
+                                navController.navigate(Screen.EditTransaction.route)
+                            },
                             painter = painterResource(R.drawable.edit),
                             contentDescription = ""
                         )
@@ -71,11 +78,19 @@ fun ExpenseDetailScreen(
                                 transactionViewModel.deleteTransaction(
                                     invoiceNumber = transaction!!.invoiceNumber,
                                     onSuccess = {
-                                        Toast.makeText(context, "Transaction deleted successfully!", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "Transaction deleted successfully!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                         navController.popBackStack()
                                     },
                                     onError = { error ->
-                                        Toast.makeText(context, "Failed to delete: $error", Toast.LENGTH_LONG).show()
+                                        Toast.makeText(
+                                            context,
+                                            "Failed to delete: $error",
+                                            Toast.LENGTH_LONG
+                                        ).show()
                                     }
                                 )
                             },
@@ -98,7 +113,7 @@ fun ExpenseDetailScreen(
                 invoiceDate = transaction?.date ?: ""
             )
             Box(modifier = Modifier.height(15.dp))
-            ExpenseDescription(text = transaction?.text ?:"")
+            ExpenseDescription(text = transaction?.text ?: "")
             Box(modifier = Modifier.height(15.dp))
             ExpenseAmountCard(amt = transaction?.amount.toString())
         }
