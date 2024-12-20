@@ -1,6 +1,5 @@
 package com.flobiz.expense_manager.navigation
 
-import TransactionViewModel
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,6 +9,7 @@ import com.flobiz.expense_manager.ui.screens.auth.LoginScreen
 import com.flobiz.expense_manager.ui.screens.auth.SignUpScreen
 import com.flobiz.expense_manager.ui.screens.expense.AddExpenseScreen
 import com.flobiz.expense_manager.ui.screens.expense.ExpenseDetailScreen
+import com.flobiz.expense_manager.ui.screens.expense.TransactionViewModel
 import com.flobiz.expense_manager.viewModel.AuthViewModel
 
 @Composable

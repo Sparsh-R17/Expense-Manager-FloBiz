@@ -1,6 +1,5 @@
 package com.flobiz.expense_manager
 
-import TransactionViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,7 +19,6 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +31,7 @@ import com.flobiz.expense_manager.navigation.NavItem
 import com.flobiz.expense_manager.navigation.NavigationStack
 import com.flobiz.expense_manager.navigation.Screen
 import com.flobiz.expense_manager.ui.screens.dashboard.DashboardScreen
+import com.flobiz.expense_manager.ui.screens.expense.TransactionViewModel
 import com.flobiz.expense_manager.ui.screens.settings.SettingsScreen
 import com.flobiz.expense_manager.ui.theme.ColorBackground
 import com.flobiz.expense_manager.ui.theme.ColorOnSecondary
@@ -41,8 +40,6 @@ import com.flobiz.expense_manager.ui.theme.ColorSecondary
 import com.flobiz.expense_manager.ui.theme.Flobiz_jcTheme
 import com.flobiz.expense_manager.viewModel.AuthViewModel
 import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
 

@@ -65,6 +65,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:23.1.0")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
 
+    //firestore
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
     //firebase-analytics
     implementation("com.google.firebase:firebase-analytics")
 

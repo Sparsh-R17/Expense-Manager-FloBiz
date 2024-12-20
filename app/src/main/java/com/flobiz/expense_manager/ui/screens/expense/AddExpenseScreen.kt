@@ -1,6 +1,5 @@
 package com.flobiz.expense_manager.ui.screens.expense
 
-import TransactionViewModel
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,19 +63,18 @@ import com.flobiz.expense_manager.ui.theme.ColorPrimary
 import com.flobiz.expense_manager.ui.theme.ColorSecondary
 import com.flobiz.expense_manager.ui.theme.TextColorPrimary
 import com.flobiz.expense_manager.utils.TransactionType
-import com.google.common.io.Files.append
 import java.util.UUID
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddExpenseScreen(navController: NavController,transactionViewModel: TransactionViewModel){
+fun AddExpenseScreen(navController: NavController, transactionViewModel: TransactionViewModel) {
     var selectedOption by remember { mutableStateOf(TransactionType.Expense) }
     var showDatePicker by remember { mutableStateOf(false) }
     var selectedDateMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var description by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
-    var context = LocalContext.current
+    val context = LocalContext.current
 
     val formattedDate = remember(selectedDateMillis) {
         DateUtils.formatDate(selectedDateMillis)
@@ -120,189 +120,212 @@ fun AddExpenseScreen(navController: NavController,transactionViewModel: Transact
                 )
             )
         }
-    ){
-            paddingValues -> Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Gray.copy(alpha = 0.1f))
-            .padding(paddingValues)
-            .padding(vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        SegmentButton(
-            selectedOption = selectedOption,
-            onOptionSelected = { selectedOption = it }
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Box(
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp)
-        ){
-            Column (
-                modifier = Modifier
-                    .background(Color.White)
-                    .padding(horizontal = 25.dp)
-                    .fillMaxSize()
-            ){
-                Text(
-                    text =  buildAnnotatedString {
-                        append("Date ")
-                        withStyle(style = SpanStyle(color = Color.Red)) {
-                            append("*")
-                        }
-                    },
-                    modifier = Modifier.padding(vertical = 10.dp),
-                    fontWeight = FontWeight.Bold,
-                    color = TextColorPrimary,
-                )
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = formattedDate,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = {
-                        Icon(
-                            modifier = Modifier.clickable(onClick = {
-                                showDatePicker = true
-                            }),
-                            imageVector = Icons.Default.CalendarToday,
-                            contentDescription = "Select Date",
-                        )
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ColorPrimary,
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
-                    )
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp)
+                .fillMaxSize()
+                .background(Color.Gray.copy(alpha = 0.1f))
+                .padding(paddingValues)
+                .padding(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .background(Color.White)
-                    .padding(horizontal = 25.dp)
-                    .fillMaxSize()
-            ) {
-                Text(
-                    text =  buildAnnotatedString {
-                        append("Description")
-                        withStyle(style = SpanStyle(color = Color.Red)) {
-                            append("*")
-                        }
-                    },
-                    modifier = Modifier.padding(vertical = 10.dp),
-                    fontWeight = FontWeight.Bold,
-                    color = TextColorPrimary,
-                )
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = description,
-                    onValueChange = {
-                        description = it
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    ),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = ColorPrimary,
-                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
-                    )
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp)
-                .background(Color.White)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-//                    .background(Color.White),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    "Total Amount",
-                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp),
-                    fontWeight = FontWeight.Bold,
-                    color = TextColorPrimary,
-                )
-                TextField(
-                    value = amount,
-                    onValueChange = { amount = it },
-                    modifier = Modifier.width(150.dp),
-                    singleLine = true,
-                    leadingIcon = {
-                        Text(
-                            "₹",
-//                            modifier = Modifier.padding(start = 0.dp),
-                            color = TextColorPrimary,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = ColorBackground,
-                        unfocusedContainerColor = ColorBackground,
-                        focusedIndicatorColor = ColorPrimary,
-                    )
-                )
-            }
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp)
-                .background(Color.White)
-        ){
-            Button(
-                onClick = {
-                    if(formattedDate.isEmpty() || amount.isEmpty()||description.isEmpty()){
-                        Toast.makeText(context,"Fields are empty. Please ensure all fields are entered",Toast.LENGTH_LONG).show()
+            SegmentButton(
+                selectedOption = selectedOption,
+                onOptionSelected = { selectedOption = it }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
 
-                    }else{
-                        val invoiceNumber = "INV - " + UUID.randomUUID().toString().replace("-","").take(5)
-                        val newTransaction = Transaction(description,invoiceNumber
-                            ,amount.toDouble(),formattedDate,selectedOption)
-                        if(transactionViewModel.transactions.add(newTransaction)) {
-                            navController.navigate(Screen.Main.route)
-                        }else{
-                            Toast.makeText(context, "Unable to add the transaction!!!", Toast.LENGTH_LONG).show()
-                        }
-                    }
-                },
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .height(56.dp)
-                    .align(Alignment.Center),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = ColorSecondary
-                ),
-                shape = RoundedCornerShape(12.dp)
+                    .height(120.dp)
             ) {
-                Text(
-                    "Save",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal
-                )
+                Column(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(horizontal = 25.dp)
+                        .fillMaxSize()
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append("Date ")
+                            withStyle(style = SpanStyle(color = Color.Red)) {
+                                append("*")
+                            }
+                        },
+                        modifier = Modifier.padding(vertical = 10.dp),
+                        fontWeight = FontWeight.Bold,
+                        color = TextColorPrimary,
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = formattedDate,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = {
+                            Icon(
+                                modifier = Modifier.clickable(onClick = {
+                                    showDatePicker = true
+                                }),
+                                imageVector = Icons.Default.CalendarToday,
+                                contentDescription = "Select Date",
+                            )
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = ColorPrimary,
+                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                        )
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(horizontal = 25.dp)
+                        .fillMaxSize()
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append("Description")
+                            withStyle(style = SpanStyle(color = Color.Red)) {
+                                append("*")
+                            }
+                        },
+                        modifier = Modifier.padding(vertical = 10.dp),
+                        fontWeight = FontWeight.Bold,
+                        color = TextColorPrimary,
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = description,
+                        onValueChange = {
+                            description = it
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = ColorPrimary,
+                            unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                        )
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .background(Color.White)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        "Total Amount",
+                        modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp),
+                        fontWeight = FontWeight.Bold,
+                        color = TextColorPrimary,
+                    )
+                    TextField(
+                        value = amount,
+                        onValueChange = { amount = it },
+                        modifier = Modifier.width(150.dp),
+                        singleLine = true,
+                        leadingIcon = {
+                            Text(
+                                "₹",
+                                color = TextColorPrimary,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = ColorBackground,
+                            unfocusedContainerColor = ColorBackground,
+                            focusedIndicatorColor = ColorPrimary,
+                        )
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .background(Color.White)
+            ) {
+                Button(
+                    onClick = {
+                        if (formattedDate.isEmpty() || amount.isEmpty() || description.isEmpty()) {
+                            Toast.makeText(
+                                context,
+                                "Fields are empty. Please ensure all fields are entered",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            val invoiceNumber =
+                                "INV-" + UUID.randomUUID().toString().replace("-", "").take(5)
+                            val newTransaction = Transaction(
+                                text = description,
+                                invoiceNumber = invoiceNumber,
+                                amount = amount.toDouble(),
+                                date = formattedDate,
+                                type = selectedOption
+                            )
+
+                            transactionViewModel.addTransaction(
+                                transaction = newTransaction,
+                                onSuccess = {
+                                    Toast.makeText(
+                                        context,
+                                        "Transaction added successfully!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    navController.navigate(Screen.Main.route)
+                                },
+                                onError = { error ->
+                                    Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                                }
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ColorSecondary
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    if (transactionViewModel.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White
+                        )
+                    } else {
+                        Text(
+                            "Save",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                }
             }
         }
-    }
     }
 }

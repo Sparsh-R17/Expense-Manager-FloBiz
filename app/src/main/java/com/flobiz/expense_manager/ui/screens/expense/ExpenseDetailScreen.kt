@@ -1,6 +1,6 @@
 package com.flobiz.expense_manager.ui.screens.expense
 
-import TransactionViewModel
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,6 +16,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,7 +35,7 @@ fun ExpenseDetailScreen(
     navController: NavHostController
 ) {
     val transaction = transactionViewModel.selectedTransaction.value
-
+    val context = LocalContext.current
     Scaffold(
         containerColor = ColorPrimary.copy(alpha = .05f),
         topBar = {
@@ -66,6 +67,18 @@ fun ExpenseDetailScreen(
                         )
                         Box(modifier = Modifier.width(25.dp))
                         Image(
+                            modifier = Modifier.clickable {
+                                transactionViewModel.deleteTransaction(
+                                    invoiceNumber = transaction!!.invoiceNumber,
+                                    onSuccess = {
+                                        Toast.makeText(context, "Transaction deleted successfully!", Toast.LENGTH_SHORT).show()
+                                        navController.popBackStack()
+                                    },
+                                    onError = { error ->
+                                        Toast.makeText(context, "Failed to delete: $error", Toast.LENGTH_LONG).show()
+                                    }
+                                )
+                            },
                             painter = painterResource(R.drawable.delete),
                             contentDescription = ""
                         )
