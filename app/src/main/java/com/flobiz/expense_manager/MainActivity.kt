@@ -30,24 +30,29 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.flobiz.expense_manager.navigation.NavItem
 import com.flobiz.expense_manager.navigation.NavigationStack
+import com.flobiz.expense_manager.ui.screens.auth.LoginScreen
 import com.flobiz.expense_manager.ui.screens.settings.SettingsScreen
 import com.flobiz.expense_manager.ui.theme.ColorBackground
 import com.flobiz.expense_manager.ui.theme.ColorOnSecondary
 import com.flobiz.expense_manager.ui.theme.ColorPrimary
 import com.flobiz.expense_manager.ui.theme.ColorSecondary
 import com.flobiz.expense_manager.ui.theme.Flobiz_jcTheme
+import com.flobiz.expense_manager.viewModel.AuthViewModel
 import com.flobiz.expense_manager.viewModel.TransactionViewModel
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        FirebaseApp.initializeApp(this)
         val transactionViewModel = TransactionViewModel()
+        val authViewModel = AuthViewModel()
         setContent {
             Flobiz_jcTheme(
                 darkTheme = false
             ) {
-                NavigationStack(transactionViewModel = transactionViewModel)
+                NavigationStack(transactionViewModel = transactionViewModel,authViewModel)
             }
         }
     }

@@ -50,6 +50,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.androidx.runtime.livedata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -60,10 +62,19 @@ dependencies {
 
     //firebase
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-auth:23.1.0")
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
 
     //firebase-analytics
     implementation("com.google.firebase:firebase-analytics")
 
     //navigation
     implementation("androidx.navigation:navigation-compose:2.8.5")
+
+    //icons-extended
+    implementation("androidx.compose.material:material-icons-extended:1.7.6")
+
+    //coil
+    implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
 }

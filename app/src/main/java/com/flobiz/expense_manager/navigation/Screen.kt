@@ -7,4 +7,7 @@ sealed class Screen(val route: String) {
             return "expense_detail_screen/$transactionId"
         }
     }
+    object Login: Screen("login_screen")
+    object SignUp: Screen("signup_screen")
+    object AddTransaction : Screen("add_transaction")
 }
