@@ -20,6 +20,17 @@ class AuthRepository(
         }
     }
 
+    suspend fun registerWithEmailAndPassword(email: String, password: String): FirebaseUser? {
+        return try {
+            val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            authResult.user
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Error registering user: ${e.message}")
+            null
+        }
+    }
+
+
     suspend fun signInWithGoogle(account: GoogleSignInAccount): FirebaseUser? {
         return try {
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)

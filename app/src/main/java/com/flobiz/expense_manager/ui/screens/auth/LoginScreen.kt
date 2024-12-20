@@ -1,6 +1,7 @@
 package com.flobiz.expense_manager.ui.screens.auth
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -17,6 +18,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.flobiz.expense_manager.R.string
 import com.flobiz.expense_manager.navigation.Screen
 import com.flobiz.expense_manager.ui.screens.auth.components.CustomButton
 import com.flobiz.expense_manager.ui.screens.auth.components.CustomTextField
@@ -40,24 +41,26 @@ import com.flobiz.expense_manager.ui.screens.auth.components.TextDivider
 import com.flobiz.expense_manager.ui.theme.ColorBackground
 import com.flobiz.expense_manager.ui.theme.ColorPrimary
 import com.flobiz.expense_manager.ui.theme.TextColorPrimary
+import com.flobiz.expense_manager.viewModel.AuthState
 import com.flobiz.expense_manager.viewModel.AuthViewModel
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignIn.*
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions.*
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignIn.getClient
+import com.google.android.gms.auth.api.signin.GoogleSignIn.getSignedInAccountFromIntent
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN
 import com.google.android.gms.common.api.ApiException
 
 @Composable
 fun LoginScreen(
     navController: NavHostController,
-    viewModel: AuthViewModel= viewModel()){
+    authViewModel: AuthViewModel= viewModel()){
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
 
     val context = LocalContext.current
 
-    val loading by viewModel.loading.observeAsState(false)
-    val errorMessage by viewModel.errorMessage.observeAsState(null)
+    val loading by authViewModel.loading.observeAsState(false)
+    val errorMessage by authViewModel.errorMessage.observeAsState(null)
 
     if (loading) {
         CircularProgressIndicator()
@@ -76,10 +79,20 @@ fun LoginScreen(
         try {
             val account = task.getResult(ApiException::class.java)
             if (account != null) {
-                viewModel.signInWithGoogle(account)
+                authViewModel.signInWithGoogle(account)
             }
         } catch (e: ApiException) {
             Log.e("LoginScreen", "Google sign-in failed: ${e.message}")
+        }
+    }
+
+    val authState = authViewModel.authState.observeAsState()
+
+    LaunchedEffect (authState.value){
+        when(authState.value) {
+            is AuthState.Authenticated -> navController.navigate(Screen.Main.route)
+            is AuthState.Error -> Toast.makeText(context, (authState.value as AuthState.Error).msg, Toast.LENGTH_LONG).show()
+            else -> Unit
         }
     }
 
@@ -115,7 +128,8 @@ fun LoginScreen(
         CustomButton(
             text = "Login",
             onClick = {
-//                viewModel.signInWithEmailAndPass(email,pass)
+                authViewModel.loginWithEmailAndPassword(email, pass)
+
             },
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -145,7 +159,7 @@ fun LoginScreen(
                 val googleSignInClient = getClient(
                     context,
                     Builder(DEFAULT_SIGN_IN)
-                        .requestIdToken(string.web_cliend_id.toString())
+                        .requestIdToken("967574067307-tqi23itabubika64g7ss3qvdqa0srffj.apps.googleusercontent.com")
                         .requestEmail()
                         .build()
                 )

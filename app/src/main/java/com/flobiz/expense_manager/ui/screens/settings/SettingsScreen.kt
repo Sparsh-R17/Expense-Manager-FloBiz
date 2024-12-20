@@ -1,5 +1,6 @@
 package com.flobiz.expense_manager.ui.screens.settings
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,29 +24,57 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.flobiz.expense_manager.navigation.Screen
 import com.flobiz.expense_manager.ui.screens.settings.components.ProfileAvatar
 import com.flobiz.expense_manager.ui.theme.ColorError
 import com.flobiz.expense_manager.ui.theme.ColorOnBackground
 import com.flobiz.expense_manager.ui.theme.ColorOnSecondary
 import com.flobiz.expense_manager.ui.theme.ColorPrimary
+import com.flobiz.expense_manager.viewModel.AuthState
+import com.flobiz.expense_manager.viewModel.AuthViewModel
 
-@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier) {
+fun SettingsScreen(
+    modifier: Modifier = Modifier, authViewModel: AuthViewModel = viewModel(),navController : NavHostController
+) {
+
+    val authState = authViewModel.authState.observeAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect (authState.value){
+        when(authState.value) {
+            is AuthState.Unauthenticated -> {
+                kotlinx.coroutines.delay(100)
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(Screen.Login.route) {
+                        inclusive = true
+                    }
+                }
+            }
+            is AuthState.Error -> Toast.makeText(context, (authState.value as AuthState.Error).msg, Toast.LENGTH_LONG).show()
+            else -> Unit
+        }
+    }
+
     Scaffold(
         containerColor = ColorPrimary.copy(alpha = .05f),
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Settings",
+                    Text(
+                        "Settings",
                         modifier = Modifier.padding(start = 10.dp),
                         fontWeight = FontWeight.Medium,
                         color = ColorOnSecondary
@@ -62,11 +91,11 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                 .padding(it)
                 .padding(vertical = 30.dp, horizontal = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Row (
+        ) {
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-            ){
+            ) {
                 ProfileAvatar(null)
                 Spacer(modifier = Modifier.width(30.dp))
                 Text(
@@ -75,13 +104,15 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     fontSize = 30.sp,
                 )
             }
-            Spacer(modifier=Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 10.dp),
                 color = Color.Gray.copy(alpha = 0.2f)
             )
             OutlinedButton(
-                onClick = {},
+                onClick = {
+                    authViewModel.logout()
+                },
                 modifier = Modifier
                     .wrapContentWidth()
                     .padding(16.dp),

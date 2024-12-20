@@ -1,5 +1,6 @@
 package com.flobiz.expense_manager.ui.screens.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,12 +13,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -30,18 +34,30 @@ import com.flobiz.expense_manager.ui.screens.auth.components.CustomTextField
 import com.flobiz.expense_manager.ui.theme.ColorBackground
 import com.flobiz.expense_manager.ui.theme.ColorPrimary
 import com.flobiz.expense_manager.ui.theme.TextColorPrimary
+import com.flobiz.expense_manager.viewModel.AuthState
 import com.flobiz.expense_manager.viewModel.AuthViewModel
 
 
 @Composable
 fun SignUpScreen(
     navController: NavHostController,
-    viewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel()
 ){
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var confPass by remember { mutableStateOf("") }
+
+    val authState = authViewModel.authState.observeAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect (authState.value){
+        when(authState.value) {
+            is AuthState.Authenticated -> navController.navigate(Screen.Main.route)
+            is AuthState.Error ->Toast.makeText(context, (authState.value as AuthState.Error).msg, Toast.LENGTH_LONG).show()
+            else -> Unit
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -87,6 +103,7 @@ fun SignUpScreen(
         CustomButton(
             text = "Sign Up",
             onClick = {
+                authViewModel.signUpWithEmailAndPassword(email, pass)
             }
         )
 

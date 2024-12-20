@@ -52,14 +52,14 @@ class MainActivity : ComponentActivity() {
             Flobiz_jcTheme(
                 darkTheme = false
             ) {
-                NavigationStack(transactionViewModel = transactionViewModel,authViewModel)
+                NavigationStack(transactionViewModel = transactionViewModel, authViewModel)
             }
         }
     }
 }
 
 @Composable
-fun MainScreen(navController : NavHostController, transactionViewModel: TransactionViewModel) {
+fun MainScreen(navController: NavHostController, transactionViewModel: TransactionViewModel) {
     val navItem = listOf(
         NavItem("Dashboard", Icons.Default.Home),
         NavItem("Settings", Icons.Default.Settings)
@@ -73,13 +73,14 @@ fun MainScreen(navController : NavHostController, transactionViewModel: Transact
         modifier = Modifier.fillMaxSize(),
         containerColor = ColorBackground,
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = {  Text(text = "Add New") },
-                onClick = {},
-                containerColor = ColorSecondary,
-                contentColor = ColorOnSecondary,
-                icon ={ Icon(Icons.Filled.Add,"")}
-            )
+            if (selectedIndex == 0)
+                ExtendedFloatingActionButton(
+                    text = { Text(text = "Add New") },
+                    onClick = {},
+                    containerColor = ColorSecondary,
+                    contentColor = ColorOnSecondary,
+                    icon = { Icon(Icons.Filled.Add, "") }
+                )
         },
         floatingActionButtonPosition = FabPosition.Center,
         bottomBar = {
@@ -118,7 +119,7 @@ fun MainScreen(navController : NavHostController, transactionViewModel: Transact
                 transactionViewModel = transactionViewModel
             ) //innerPadding
         else
-            SettingsScreen(modifier = Modifier.padding(it))
+            SettingsScreen(modifier = Modifier.padding(it), navController = navController)
     }
 }
 

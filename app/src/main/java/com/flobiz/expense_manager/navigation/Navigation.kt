@@ -23,10 +23,10 @@ fun NavigationStack(transactionViewModel: TransactionViewModel,authViewModel: Au
             ExpenseDetailScreen(transactionViewModel = transactionViewModel, navController = navController)
         }
         composable(route=Screen.Login.route) {
-            LoginScreen(navController = navController, viewModel =  authViewModel)
+            LoginScreen(navController = navController, authViewModel =  authViewModel)
         }
         composable(route=Screen.SignUp.route) {
-            SignUpScreen(navController = navController,viewModel = authViewModel)
+            SignUpScreen(navController = navController,authViewModel = authViewModel)
         }
 //        composable(route=Screen.AddTransaction.route) {
 //            AddExpenseScreen(navController=navController)
