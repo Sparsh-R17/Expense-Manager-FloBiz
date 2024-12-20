@@ -33,7 +33,7 @@ fun ProfileAvatar(
             .border(1.dp, ColorPrimary.copy(alpha = 0.2f), CircleShape),
         contentAlignment = Alignment.Center
     ){
-        if(imageUrl!=null){
+        if(imageUrl!="null"){
             AsyncImage(
                 model = imageUrl,
                 contentDescription = "ProfilePic",

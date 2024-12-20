@@ -6,22 +6,28 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flobiz.expense_manager.repository.AuthRepository
-import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.delay
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.auth.ktx.auth
+import  com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 
 class AuthViewModel(private val authRepository: AuthRepository = AuthRepository()) : ViewModel() {
+
     private val _user = MutableLiveData<FirebaseUser?>()
 
-    private val _loading = MutableLiveData(false)
 
     private val _errorMessage = MutableLiveData<String?>()
 
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+//    val loadingState = MutableStateFlow(LoadingState.IDLE)
+
+    private val auth : FirebaseAuth = Firebase.auth
+
+    private val _loading = MutableLiveData(false)
+    val loading : LiveData<Boolean> = _loading
+
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
 
@@ -37,42 +43,46 @@ class AuthViewModel(private val authRepository: AuthRepository = AuthRepository(
         }
     }
 
-    fun loginWithEmailAndPassword(email: String, password: String) {
-
-        if (email.isEmpty() || password.isEmpty()) {
-            _authState.value = AuthState.Error("Email or password can't be empty")
-            return
-        }
-
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    _authState.value = AuthState.Authenticated
-                } else {
-                    _authState.value =
-                        AuthState.Error(task.exception?.message ?: "Something went wrong")
+    fun signWithEmail(email : String, pwd : String, home: () -> Unit) = viewModelScope.launch {
+        try {
+            auth.signInWithEmailAndPassword(email, pwd)
+                .addOnCompleteListener { task ->
+                    if(task.isSuccessful) {
+                        home.invoke()
+                        _authState.value = AuthState.Authenticated
+                    } else {
+                        Log.d("TAG", "signWithEmailPassword: ${task.result}")
+                    }
                 }
-            }
+        }
+        catch(ex : Exception) {
+            Log.d("TAG", "signWithEmail: ${ex.message}")
+        }
     }
 
-    fun signUpWithEmailAndPassword(email: String, password: String) {
-
-        if (email.isEmpty() || password.isEmpty()) {
-            _authState.value = AuthState.Error("Email or password can't be empty")
-            return
-        }
-
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    _authState.value = AuthState.Authenticated
-                } else {
-                    _authState.value =
-                        AuthState.Error(task.exception?.message ?: "Something went wrong")
+    fun createWithEmail(
+        name : String,
+        email : String,
+        pwd : String,
+        home : () -> Unit
+    ) {
+        if(_loading.value == false) {
+            _loading.value = true
+            auth.createUserWithEmailAndPassword(email, pwd)
+                .addOnCompleteListener { task->
+                    if(task.isSuccessful) {
+                        auth.currentUser?.updateProfile(
+                            UserProfileChangeRequest.Builder().setDisplayName(name).build()
+                        )
+                        home()
+                    }
+                    else {
+                        Log.d("signtag", "createWithEmail: ${task.result}")
+                    }
                 }
-            }
+            _loading.value = false
+        }
     }
-
 
     fun signInWithGoogle(account: GoogleSignInAccount) {
         _loading.value = true
@@ -86,14 +96,10 @@ class AuthViewModel(private val authRepository: AuthRepository = AuthRepository(
         _authState.value = AuthState.Authenticated
     }
 
-
-
     fun logout() {
         _loading.value = true
         auth.signOut()
         _loading.value = false
-        _user.value = null
-
         _authState.value = AuthState.Unauthenticated
     }
 }

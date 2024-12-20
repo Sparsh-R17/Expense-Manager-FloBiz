@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,12 +39,12 @@ import com.flobiz.expense_manager.ui.theme.ColorOnSecondary
 import com.flobiz.expense_manager.ui.theme.ColorPrimary
 import com.flobiz.expense_manager.ui.theme.ColorSecondary
 import com.flobiz.expense_manager.ui.theme.Flobiz_jcTheme
-import com.flobiz.expense_manager.viewModel.AuthState
 import com.flobiz.expense_manager.viewModel.AuthViewModel
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
-    private lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +53,7 @@ class MainActivity : ComponentActivity() {
 
         // Initialize ViewModels
         val transactionViewModel = TransactionViewModel()
-        authViewModel = AuthViewModel()
+        val authViewModel = AuthViewModel()
 
         setContent {
             Flobiz_jcTheme(darkTheme = false) {
@@ -80,14 +79,6 @@ fun MainScreen(
 
     var selectedIndex by remember { mutableIntStateOf(0) }
 
-    val authState = authViewModel.authState.observeAsState()
-
-    LaunchedEffect (authState.value){
-        when(authState.value) {
-            is AuthState.Unauthenticated ->navController.navigate(Screen.Login.route)
-            else ->Unit
-        }
-    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

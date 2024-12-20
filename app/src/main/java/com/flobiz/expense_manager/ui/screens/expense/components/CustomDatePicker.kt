@@ -83,7 +83,8 @@ fun CustomDatePicker(
                 selectedDayContainerColor = ColorSecondary,
                 todayDateBorderColor = ColorPrimary,
                 selectedYearContainerColor = ColorPrimary,
-                containerColor = ColorBackground
+                containerColor = ColorBackground,
+                todayContentColor = ColorPrimary,
             )
         )
     }

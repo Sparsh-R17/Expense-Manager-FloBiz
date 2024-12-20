@@ -13,7 +13,7 @@ import com.flobiz.expense_manager.ui.screens.expense.ExpenseDetailScreen
 import com.flobiz.expense_manager.viewModel.AuthViewModel
 
 @Composable
-fun NavigationStack(transactionViewModel: TransactionViewModel,authViewModel: AuthViewModel) {
+fun NavigationStack(transactionViewModel: TransactionViewModel, authViewModel: AuthViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.Main.route) {
@@ -24,7 +24,7 @@ fun NavigationStack(transactionViewModel: TransactionViewModel,authViewModel: Au
             ExpenseDetailScreen(transactionViewModel = transactionViewModel, navController = navController)
         }
         composable(route=Screen.Login.route) {
-            LoginScreen(navController = navController, authViewModel =  authViewModel)
+            LoginScreen(navController = navController, authViewModel =  AuthViewModel())
         }
         composable(route=Screen.SignUp.route) {
             SignUpScreen(navController = navController,authViewModel = authViewModel)

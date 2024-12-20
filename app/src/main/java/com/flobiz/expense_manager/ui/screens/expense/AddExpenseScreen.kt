@@ -43,9 +43,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -59,6 +62,7 @@ import com.flobiz.expense_manager.ui.theme.ColorPrimary
 import com.flobiz.expense_manager.ui.theme.ColorSecondary
 import com.flobiz.expense_manager.ui.theme.TextColorPrimary
 import com.flobiz.expense_manager.utils.TransactionType
+import com.google.common.io.Files.append
 import java.util.UUID
 
 
@@ -143,7 +147,12 @@ fun AddExpenseScreen(navController: NavController,transactionViewModel: Transact
                     .fillMaxSize()
             ){
                 Text(
-                    "DATE",
+                    text =  buildAnnotatedString {
+                        append("Date ")
+                        withStyle(style = SpanStyle(color = Color.Red)) {
+                            append("*")
+                        }
+                    },
                     modifier = Modifier.padding(vertical = 10.dp),
                     fontWeight = FontWeight.Bold,
                     color = TextColorPrimary,
@@ -181,7 +190,12 @@ fun AddExpenseScreen(navController: NavController,transactionViewModel: Transact
                     .fillMaxSize()
             ) {
                 Text(
-                    "DESCRIPTION",
+                    text =  buildAnnotatedString {
+                        append("Description")
+                        withStyle(style = SpanStyle(color = Color.Red)) {
+                            append("*")
+                        }
+                    },
                     modifier = Modifier.padding(vertical = 10.dp),
                     fontWeight = FontWeight.Bold,
                     color = TextColorPrimary,

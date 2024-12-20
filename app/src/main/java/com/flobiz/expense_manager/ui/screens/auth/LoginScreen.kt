@@ -1,7 +1,6 @@
 package com.flobiz.expense_manager.ui.screens.auth
 
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -16,9 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,14 +36,12 @@ import com.flobiz.expense_manager.ui.screens.auth.components.TextDivider
 import com.flobiz.expense_manager.ui.theme.ColorBackground
 import com.flobiz.expense_manager.ui.theme.ColorPrimary
 import com.flobiz.expense_manager.ui.theme.TextColorPrimary
-import com.flobiz.expense_manager.viewModel.AuthState
 import com.flobiz.expense_manager.viewModel.AuthViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn.getClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn.getSignedInAccountFromIntent
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LoginScreen(
@@ -56,7 +51,6 @@ fun LoginScreen(
     var pass by remember { mutableStateOf("") }
 
     val context = LocalContext.current
-
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = getSignedInAccountFromIntent(result.data)
@@ -70,17 +64,6 @@ fun LoginScreen(
         }
     }
 
-    val authState = authViewModel.authState.observeAsState()
-
-
-    LaunchedEffect (authState.value){
-        Log.d("LoginScreen2", "LoginScreen: $authState")
-        when(authState.value) {
-            is AuthState.Authenticated -> navController.navigate(Screen.Main.route)
-            is AuthState.Error -> Toast.makeText(context, (authState.value as AuthState.Error).msg, Toast.LENGTH_LONG).show()
-            else -> Unit
-        }
-    }
 
 
     Column(
@@ -115,7 +98,9 @@ fun LoginScreen(
         CustomButton(
             text = "Login",
             onClick = {
-                authViewModel.loginWithEmailAndPassword(email, pass)
+                authViewModel.signWithEmail(email, pass) {
+                    navController.navigate(Screen.Main.route)
+                }
 
             },
         )
@@ -152,6 +137,7 @@ fun LoginScreen(
                 )
                 val intent = googleSignInClient.signInIntent
                 launcher.launch(intent)
+                navController.navigate(Screen.Main.route)
             }
         )
     }

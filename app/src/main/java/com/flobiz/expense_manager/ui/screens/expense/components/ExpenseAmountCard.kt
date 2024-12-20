@@ -33,7 +33,7 @@ fun ExpenseAmountCard(
             horizontalArrangement = Arrangement.SpaceBetween
         ){
             Text("Total Amount", fontWeight = FontWeight.Medium, fontSize = 18.sp, color = Color.DarkGray)
-            Text("Rs. $amt", fontWeight = FontWeight.Medium, fontSize = 18.sp, color = Color.DarkGray)
+            Text("₹ $amt", fontWeight = FontWeight.Medium, fontSize = 18.sp, color = Color.DarkGray)
         }
     }
 }
