@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "967574067307",
+    "project_id": "expense-flobiz",
+    "storage_bucket": "expense-flobiz.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967574067307:android:4f6c0b01bbc76cf98d392e",
+        "android_client_info": {
+          "package_name": "com.flobiz.expense_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "967574067307-jo3denst5q1usupi4pkslaufcko4flma.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.flobiz.expense_manager",
+            "certificate_hash": "2188656cad18a08fd17407f6ea6d876242092e04"
+          }
+        },
+        {
+          "client_id": "967574067307-tqi23itabubika64g7ss3qvdqa0srffj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMt4piKkG4o356KXFekimosWCsMRcWrbY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "967574067307-br8cfh5n2alaua0jf5vib0nun91j8753.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
